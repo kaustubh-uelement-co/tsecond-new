@@ -1,0 +1,283 @@
+@import "tailwindcss";
+
+/* ============================================================================
+   TSECOND — light, subtle, glass
+   The page is a soft tinted field. Content sits on frosted panels that pick up
+   that field through a backdrop blur. Colour is near-absent: one muted blue,
+   used only where something is live.
+   ========================================================================== */
+
+@theme {
+  --font-sans: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --font-display: "Archivo", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, monospace;
+
+  --color-paper: #fbfcfe;
+  --color-paper2: #f4f7fb;
+  --color-ink: #161b29;
+  --color-body: #5a6478;
+  --color-muted: #8a93a6;
+  --color-faint: #aeb6c4;
+  --color-accent: #3e5bbf;
+  --color-accent2: #7d8fd6;
+  --color-line: rgba(22, 27, 41, 0.08);
+  --color-line2: rgba(22, 27, 41, 0.14);
+}
+
+:root {
+  --gut: clamp(16px, 3vw, 40px);
+  --ease: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background: var(--color-paper);
+  color: var(--color-body);
+  -webkit-font-smoothing: antialiased;
+  letter-spacing: -0.008em;
+  overflow-x: hidden;
+}
+
+::selection {
+  background: rgba(62, 91, 191, 0.16);
+  color: var(--color-ink);
+}
+
+:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 3px;
+}
+
+.wrap {
+  max-width: 1320px;
+  margin: 0 auto;
+  padding-inline: var(--gut);
+}
+
+/* ----------------------------------------------------- the ambient field */
+/* Fixed, barely-there colour. Its only job is to give the glass something
+   to refract — without it, frosted panels on white read as flat grey. */
+.field {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  overflow: hidden;
+}
+.field i {
+  position: absolute;
+  display: block;
+  border-radius: 50%;
+  filter: blur(100px);
+}
+.field .f1 {
+  width: 52vw;
+  height: 52vw;
+  top: -16%;
+  left: -10%;
+  background: radial-gradient(circle, rgba(62, 91, 191, 0.13), transparent 68%);
+  animation: fdrift 34s ease-in-out infinite;
+}
+.field .f2 {
+  width: 44vw;
+  height: 44vw;
+  top: 26%;
+  right: -12%;
+  background: radial-gradient(circle, rgba(145, 130, 210, 0.12), transparent 68%);
+  animation: fdrift 42s ease-in-out infinite reverse;
+}
+.field .f3 {
+  width: 38vw;
+  height: 38vw;
+  bottom: -10%;
+  left: 32%;
+  background: radial-gradient(circle, rgba(90, 160, 200, 0.1), transparent 68%);
+  animation: fdrift 50s ease-in-out infinite;
+}
+@keyframes fdrift {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  50% { transform: translate(3vw, -2vw) scale(1.1); }
+}
+
+/* a faint engineering grid, sitting under the glass */
+.field .grid {
+  position: absolute;
+  inset: 0;
+  border-radius: 0;
+  filter: none;
+  background-image:
+    linear-gradient(rgba(22, 27, 41, 0.028) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(22, 27, 41, 0.028) 1px, transparent 1px);
+  background-size: 88px 88px;
+}
+
+/* ------------------------------------------------------------- the glass */
+.glass {
+  position: relative;
+  background: rgba(255, 255, 255, 0.58);
+  backdrop-filter: blur(22px) saturate(1.7);
+  -webkit-backdrop-filter: blur(22px) saturate(1.7);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.85),
+    0 1px 2px rgba(22, 27, 41, 0.03),
+    0 12px 36px rgba(22, 27, 41, 0.05);
+}
+/* the refracted edge — bright where light would catch, gone where it wouldn't */
+.glass::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 1px;
+  background: linear-gradient(
+    145deg,
+    rgba(255, 255, 255, 1) 0%,
+    rgba(255, 255, 255, 0.35) 26%,
+    rgba(22, 27, 41, 0.07) 52%,
+    rgba(255, 255, 255, 0.3) 78%,
+    rgba(255, 255, 255, 0.9) 100%
+  );
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
+  z-index: 1;
+}
+.glass > * {
+  position: relative;
+  z-index: 2;
+}
+
+/* thinner variant for large surfaces */
+.glass-sheer {
+  background: rgba(255, 255, 255, 0.4);
+  backdrop-filter: blur(16px) saturate(1.5);
+  -webkit-backdrop-filter: blur(16px) saturate(1.5);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.7),
+    0 10px 30px rgba(22, 27, 41, 0.04);
+}
+/* denser variant for floating chrome (header, menus) */
+.glass-dense {
+  background: rgba(255, 255, 255, 0.78);
+  backdrop-filter: blur(26px) saturate(1.8);
+  -webkit-backdrop-filter: blur(26px) saturate(1.8);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.95),
+    0 8px 30px rgba(22, 27, 41, 0.07);
+}
+
+.lift {
+  transition: transform 0.5s var(--ease), box-shadow 0.5s var(--ease),
+    background 0.5s var(--ease);
+}
+.lift:hover {
+  transform: translateY(-3px);
+  background: rgba(255, 255, 255, 0.76);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.95),
+    0 20px 52px rgba(22, 27, 41, 0.09);
+}
+
+/* a hairline that reads through glass */
+.hair {
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(22, 27, 41, 0.1) 18%,
+    rgba(22, 27, 41, 0.1) 82%,
+    transparent
+  );
+  height: 1px;
+}
+
+/* ------------------------------------------------------------- utilities */
+.hw {
+  display: block;
+  width: 100%;
+  height: auto;
+  overflow: visible;
+}
+
+.marq-track {
+  display: flex;
+  width: max-content;
+  animation: marq 46s linear infinite;
+}
+.marq-rev .marq-track {
+  animation-duration: 56s;
+  animation-direction: reverse;
+}
+@keyframes marq {
+  to { transform: translateX(-50%); }
+}
+
+.range {
+  width: 100%;
+  appearance: none;
+  -webkit-appearance: none;
+  height: 2px;
+  border-radius: 2px;
+  background: rgba(22, 27, 41, 0.12);
+  outline: none;
+  cursor: pointer;
+}
+.range::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 15px;
+  height: 15px;
+  border-radius: 50%;
+  background: #fff;
+  border: 1px solid rgba(22, 27, 41, 0.18);
+  box-shadow: 0 2px 6px rgba(22, 27, 41, 0.14);
+  cursor: pointer;
+}
+.range::-moz-range-thumb {
+  width: 15px;
+  height: 15px;
+  border-radius: 50%;
+  background: #fff;
+  border: 1px solid rgba(22, 27, 41, 0.18);
+  cursor: pointer;
+}
+
+/* masked line reveal for headlines */
+.ml {
+  display: block;
+  overflow: hidden;
+}
+.ml > i {
+  display: block;
+  font-style: normal;
+  transform: translateY(104%);
+  transition: transform 1s var(--ease);
+}
+.ml.in > i { transform: translateY(0); }
+.ml:nth-child(2) > i { transition-delay: 0.08s; }
+.ml:nth-child(3) > i { transition-delay: 0.16s; }
+
+/* JS-gated reveal — content is never hidden without script */
+.js .rv {
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.9s var(--ease), transform 0.9s var(--ease);
+}
+.js .rv.in {
+  opacity: 1;
+  transform: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+  .js .rv { opacity: 1; transform: none; }
+  .ml > i { transform: none !important; }
+  .marq-track { animation: none !important; }
+}
